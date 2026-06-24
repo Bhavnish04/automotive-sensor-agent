@@ -144,3 +144,73 @@ if __name__ == "__main__":
     init_db()
     seed_db()
     print("✅ Database initialised and seeded successfully")
+    
+    
+def get_all_drivers() -> list[dict]:
+    with get_connection() as conn:
+        rows = conn.execute("""
+            SELECT d.driver_id, d.vehicle_id, v.make, v.model, v.year,
+                   COUNT(s.session_id) as total_sessions
+            FROM drivers d
+            JOIN vehicles v ON d.vehicle_id = v.vehicle_id
+            JOIN sessions s ON d.driver_id = s.driver_id
+            GROUP BY d.driver_id
+        """).fetchall()
+        return [dict(row) for row in rows]
+    
+def get_sessions_by_driver(driver_id: str) -> list[dict]:
+    with get_connection() as conn:
+        rows = conn.execute("""
+            SELECT * FROM sessions
+            WHERE driver_id = ?
+            ORDER BY max_rpm DESC
+        """, (driver_id,)).fetchall()
+        return [dict(row) for row in rows]
+    
+def get_most_aggressive_driver() -> list[dict]:
+    with get_connection() as conn:
+        rows = conn.execute("""
+            SELECT d.driver_id, v.make, v.model,
+                   COUNT(s.session_id) as total_sessions,
+                   SUM(s.aggressive_event_count) as total_aggressive_events,
+                   ROUND(AVG(s.avg_rpm), 2) as overall_avg_rpm,
+                   ROUND(AVG(s.max_speed), 2) as overall_max_speed
+            FROM sessions s
+            JOIN drivers d ON s.driver_id = d.driver_id
+            JOIN vehicles v ON d.vehicle_id = v.vehicle_id
+            GROUP BY d.driver_id
+            ORDER BY total_aggressive_events DESC
+        """).fetchall()
+        return [dict(row) for row in rows]
+    
+def get_sessions_by_label(label: str) -> list[dict]:
+    with get_connection() as conn:
+        rows = conn.execute("""
+            SELECT s.*, v.make, v.model
+            FROM sessions s
+            JOIN vehicles v ON s.vehicle_id = v.vehicle_id
+            WHERE s.driving_label = ?
+            ORDER BY s.avg_rpm DESC
+        """, (label,)).fetchall()
+        return [dict(row) for row in rows]
+
+
+def compare_drivers() -> list[dict]:
+    with get_connection() as conn:
+        rows = conn.execute("""
+            SELECT 
+                d.driver_id,
+                v.make,
+                v.model,
+                ROUND(AVG(s.avg_rpm), 2) as avg_rpm,
+                ROUND(AVG(s.max_speed), 2) as avg_max_speed,
+                ROUND(AVG(s.avg_throttle), 2) as avg_throttle,
+                ROUND(AVG(s.max_steering_angle), 2) as avg_steering,
+                SUM(s.aggressive_event_count) as total_aggressive_events
+            FROM sessions s
+            JOIN drivers d ON s.driver_id = d.driver_id
+            JOIN vehicles v ON d.vehicle_id = v.vehicle_id
+            GROUP BY d.driver_id
+            ORDER BY avg_rpm DESC
+        """).fetchall()
+        return [dict(row) for row in rows]
