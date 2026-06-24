@@ -1,0 +1,7 @@
+data/obd_clean.csv
+data/sessions_clean.csv
+data/obd.db
+__pycache__/
+*.pyc
+.env
+venv/
