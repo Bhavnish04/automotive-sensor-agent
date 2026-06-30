@@ -29,6 +29,13 @@ TOOLS:
    Use for: driver comparisons, session counts, RPM, speed, aggressive events, 
    vehicle info, fuel level, throttle, steering angle, battery voltage
 
+   AVAILABLE ENDPOINTS (use exact names):
+   - get_drivers           → list all drivers and vehicles
+   - compare_drivers       → compare RPM, speed, throttle, aggression across drivers
+   - most_aggressive       → find most aggressive driver by event count
+   - get_driver_sessions   → sessions for a specific driver (needs driver_id: D001, D002, D003)
+   - sessions_by_label     → filter sessions by label (aggressive or moderate)
+
 2. rag_tool → semantic search over OBD-II technical documents
    Use for: what a sensor reading means, why a fault occurs, mechanical explanations,
    technical definitions, diagnostic advice
@@ -37,7 +44,7 @@ RESPOND ONLY with valid JSON, no other text:
 {
   "route": "api" | "rag" | "both",
   "reasoning": "one sentence explaining why",
-  "api_params": {"endpoint": "...", "driver_id": "..."} | null,
+  "api_params": {"endpoint": "exact_endpoint_name", "driver_id": "D001"} | null,
   "rag_params": {"query": "..."} | null
 }
 """

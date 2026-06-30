@@ -40,10 +40,18 @@ def api_tool(endpoint: str, params: dict = {}) -> dict:
     
     
     
-def rag_tool(query: str) -> dict:
+def rag_tool(query: str, top_k: int = 5) -> dict:
     """Semantic search over OBD-II technical documents in Qdrant."""
-    # Stub for now — Qdrant setup comes in next phase
-    return {
-        "message": "RAG tool not yet configured. Qdrant setup pending.",
-        "query": query
-    }
+    try:
+        from qdrant.retriever import retrieve
+        chunks = retrieve(query, top_k=top_k)
+
+        if not chunks:
+            return {"error": "No relevant chunks found"}
+
+        return {
+            "chunks": chunks,
+            "total_retrieved": len(chunks)
+        }
+    except Exception as e:
+        return {"error": f"RAG retrieval failed: {str(e)}"}

@@ -14,31 +14,39 @@ class AgentState(TypedDict):
     question:       str
     route:          str
     routing_reason: str
+    api_params:     dict | None    
+    rag_params:     dict | None    
     api_result:     str | None
     rag_result:     str | None
     final_answer:   str
 
 
-def router_node(state: AgentState) -> AgentState:
+def router_node(state: AgentState) -> AgentState:   #4
     decision = route(state["question"])
     return {
         **state,
         "route":          decision.get("route", "rag"),
         "routing_reason": decision.get("reasoning", ""),
+        "api_params":     decision.get("api_params"),
+        "rag_params":     decision.get("rag_params"),
     }
 
 
-def api_node(state: AgentState) -> AgentState:
-    result = api_tool("compare_drivers")
+def api_node(state: AgentState) -> AgentState:           #6
+    params = state.get("api_params") or {}
+    endpoint = params.get("endpoint", "compare_drivers")
+    driver_id = params.get("driver_id", "")
+    
+    result = api_tool(endpoint, {"driver_id": driver_id})
     return {**state, "api_result": json.dumps(result)}
 
 
-def rag_node(state: AgentState) -> AgentState:
+def rag_node(state: AgentState) -> AgentState:               #7
     result = rag_tool(state["question"])
     return {**state, "rag_result": json.dumps(result)}
 
 
-def synthesizer_node(state: AgentState) -> AgentState:
+def synthesizer_node(state: AgentState) -> AgentState:                #8
     client = genai.Client(api_key=os.environ.get("GEMINI_API_KEY"))
 
     context = ""
@@ -59,7 +67,7 @@ Answer the question clearly based on the data provided."""
     return {**state, "final_answer": response.text.strip()}
 
 
-def build_graph():
+def build_graph():   #3
     graph = StateGraph(AgentState)
 
     graph.add_node("router",      router_node)
@@ -69,7 +77,7 @@ def build_graph():
 
     graph.set_entry_point("router")
 
-    # After router — decide which tool to call first
+    # After router — decide which tool to call first       #5
     graph.add_conditional_edges(
         "router",
         lambda s: s["route"],
@@ -96,16 +104,18 @@ def build_graph():
     return graph.compile()
 
 
-def ask(question: str) -> dict:
+def ask(question: str) -> dict:  #2
     graph = build_graph()
     result = graph.invoke({
         "question":       question,
         "route":          "",
         "routing_reason": "",
+        "api_params":     None,
+        "rag_params":     None,
         "api_result":     None,
         "rag_result":     None,
         "final_answer":   "",
-    })
+    })                                        #9
     return {
         "final_answer":   result["final_answer"],
         "route":          result["route"],
