@@ -7,21 +7,21 @@ from typing import TypedDict
 from langgraph.graph import StateGraph, END
 from agent.router import route
 from agent.tools import api_tool, rag_tool
-from google import genai
+from groq import Groq
 
 
 class AgentState(TypedDict):
     question:       str
     route:          str
     routing_reason: str
-    api_params:     dict | None    
-    rag_params:     dict | None    
+    api_params:     dict | None
+    rag_params:     dict | None
     api_result:     str | None
     rag_result:     str | None
     final_answer:   str
 
 
-def router_node(state: AgentState) -> AgentState:   #4
+def router_node(state: AgentState) -> AgentState:
     decision = route(state["question"])
     return {
         **state,
@@ -32,22 +32,24 @@ def router_node(state: AgentState) -> AgentState:   #4
     }
 
 
-def api_node(state: AgentState) -> AgentState:           #6
+def api_node(state: AgentState) -> AgentState:
     params = state.get("api_params") or {}
     endpoint = params.get("endpoint", "compare_drivers")
     driver_id = params.get("driver_id", "")
-    
+
     result = api_tool(endpoint, {"driver_id": driver_id})
     return {**state, "api_result": json.dumps(result)}
 
 
-def rag_node(state: AgentState) -> AgentState:               #7
-    result = rag_tool(state["question"])
+def rag_node(state: AgentState) -> AgentState:
+    params = state.get("rag_params") or {}
+    query = params.get("query", state["question"])
+    result = rag_tool(query)
     return {**state, "rag_result": json.dumps(result)}
 
 
-def synthesizer_node(state: AgentState) -> AgentState:                #8
-    client = genai.Client(api_key=os.environ.get("GEMINI_API_KEY"))
+def synthesizer_node(state: AgentState) -> AgentState:
+    client = Groq(api_key=os.environ.get("GROQ_API_KEY"))
 
     context = ""
     if state.get("api_result"):
@@ -60,14 +62,18 @@ Question: {state['question']}
 Data: {context}
 Answer the question clearly based on the data provided."""
 
-    response = client.models.generate_content(
-        model="gemini-2.5-flash",
-        contents=prompt
+    response = client.chat.completions.create(
+        model="llama-3.3-70b-versatile",
+        messages=[
+            {"role": "user", "content": prompt}
+        ],
+        temperature=0,
     )
-    return {**state, "final_answer": response.text.strip()}
+    answer = response.choices[0].message.content.strip()
+    return {**state, "final_answer": answer}
 
 
-def build_graph():   #3
+def build_graph():
     graph = StateGraph(AgentState)
 
     graph.add_node("router",      router_node)
@@ -77,7 +83,6 @@ def build_graph():   #3
 
     graph.set_entry_point("router")
 
-    # After router — decide which tool to call first       #5
     graph.add_conditional_edges(
         "router",
         lambda s: s["route"],
@@ -88,7 +93,6 @@ def build_graph():   #3
         }
     )
 
-    # After api — if route is 'both' go to rag too, else go straight to synthesizer
     graph.add_conditional_edges(
         "api",
         lambda s: "rag" if s["route"] == "both" else "synthesizer",
@@ -104,7 +108,7 @@ def build_graph():   #3
     return graph.compile()
 
 
-def ask(question: str) -> dict:  #2
+def ask(question: str) -> dict:
     graph = build_graph()
     result = graph.invoke({
         "question":       question,
@@ -115,7 +119,7 @@ def ask(question: str) -> dict:  #2
         "api_result":     None,
         "rag_result":     None,
         "final_answer":   "",
-    })                                        #9
+    })
     return {
         "final_answer":   result["final_answer"],
         "route":          result["route"],

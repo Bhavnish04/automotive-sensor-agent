@@ -1,21 +1,20 @@
 from dotenv import load_dotenv
 load_dotenv()
+
 import os
 import json
 import re
-from google import genai
+from groq import Groq
 
 _client = None
 
 def _get_client():
     global _client
     if _client is None:
-        api_key = os.environ.get("GEMINI_API_KEY")
+        api_key = os.environ.get("GROQ_API_KEY")
         if not api_key:
-            raise EnvironmentError(
-                "Set GEMINI_API_KEY. Get one free at https://aistudio.google.com"
-            )
-        _client = genai.Client(api_key=api_key)
+            raise EnvironmentError("Set GROQ_API_KEY in .env")
+        _client = Groq(api_key=api_key)
     return _client
 
 
@@ -51,23 +50,25 @@ RESPOND ONLY with valid JSON, no other text:
 
 def route(question: str) -> dict:
     client = _get_client()
-    
-    prompt = f"{ROUTER_PROMPT}\n\nUser question: {question}"
-    
+
     try:
-        response = client.models.generate_content(
-            model="gemini-2.5-flash",
-            contents=prompt
+        response = client.chat.completions.create(
+            model="llama-3.3-70b-versatile",
+            messages=[
+                {"role": "system", "content": ROUTER_PROMPT},
+                {"role": "user", "content": question}
+            ],
+            temperature=0,
         )
-        raw = response.text.strip()
+        raw = response.choices[0].message.content.strip()
         raw = re.sub(r"^```(?:json)?\s*", "", raw)
         raw = re.sub(r"\s*```$", "", raw)
         return json.loads(raw)
-    
-    except json.JSONDecodeError as e:
+
+    except json.JSONDecodeError:
         return {
             "route": "rag",
-            "reasoning": f"Routing failed, defaulting to RAG",
+            "reasoning": "Routing failed, defaulting to RAG",
             "api_params": None,
             "rag_params": {"query": question},
         }

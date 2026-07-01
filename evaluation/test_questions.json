@@ -1,0 +1,22 @@
+[
+  {"id": 1, "question": "Which driver had the highest average RPM?", "expected_route": "api"},
+  {"id": 2, "question": "How many sessions did Driver 2 have?", "expected_route": "api"},
+  {"id": 3, "question": "Compare all three drivers by aggression level", "expected_route": "api"},
+  {"id": 4, "question": "Which vehicle had the highest max speed?", "expected_route": "api"},
+  {"id": 5, "question": "How many drivers are in the database?", "expected_route": "api"},
+  {"id": 6, "question": "What is the average throttle position for Driver 1?", "expected_route": "api"},
+  {"id": 7, "question": "Which driver was most aggressive overall?", "expected_route": "api"},
+  {"id": 8, "question": "List all aggressive driving sessions", "expected_route": "api"},
+  {"id": 9, "question": "What car does Driver 3 drive?", "expected_route": "api"},
+  {"id": 10, "question": "Compare average steering angle between drivers", "expected_route": "api"},
+  {"id": 11, "question": "What does the MIL light indicate?", "expected_route": "rag"},
+  {"id": 12, "question": "What is a Diagnostic Trouble Code?", "expected_route": "rag"},
+  {"id": 13, "question": "What does high RPM with aggressive throttle indicate mechanically?", "expected_route": "rag"},
+  {"id": 14, "question": "What is the difference between OBD-II and EOBD?", "expected_route": "rag"},
+  {"id": 15, "question": "What is Freeze Frame data used for?", "expected_route": "rag"},
+  {"id": 16, "question": "What protocols does OBD-II support for vehicle communication?", "expected_route": "rag"},
+  {"id": 17, "question": "What does I/M Readiness mean?", "expected_route": "rag"},
+  {"id": 18, "question": "Explain what causes a flashing MIL light", "expected_route": "rag"},
+  {"id": 19, "question": "Compare Driver 1's RPM behavior with what causes catalytic converter damage", "expected_route": "both"},
+  {"id": 20, "question": "How does Driver 3's aggressive driving relate to engine wear mechanically?", "expected_route": "both"}
+]

@@ -1,0 +1,167 @@
+{
+  "timestamp": "2026-06-30T16:12:07.157089",
+  "routing_accuracy_pct": 30.0,
+  "avg_latency_s": 2.85,
+  "results": [
+    {
+      "id": 1,
+      "question": "Which driver had the highest average RPM?",
+      "expected": "api",
+      "actual": "api",
+      "correct": true,
+      "elapsed_s": 8.92
+    },
+    {
+      "id": 2,
+      "question": "How many sessions did Driver 2 have?",
+      "expected": "api",
+      "actual": "api",
+      "correct": true,
+      "elapsed_s": 7.12
+    },
+    {
+      "id": 3,
+      "question": "Compare all three drivers by aggression level",
+      "expected": "api",
+      "actual": "api",
+      "correct": true,
+      "elapsed_s": 10.1
+    },
+    {
+      "id": 4,
+      "question": "Which vehicle had the highest max speed?",
+      "expected": "api",
+      "actual": "api",
+      "correct": true,
+      "elapsed_s": 7.19
+    },
+    {
+      "id": 5,
+      "question": "How many drivers are in the database?",
+      "expected": "api",
+      "actual": "api",
+      "correct": true,
+      "elapsed_s": 6.47
+    },
+    {
+      "id": 6,
+      "question": "What is the average throttle position for Driver 1?",
+      "expected": "api",
+      "actual": "api",
+      "correct": true,
+      "elapsed_s": 17.28
+    },
+    {
+      "id": 7,
+      "question": "Which driver was most aggressive overall?",
+      "expected": "api",
+      "actual": "error",
+      "correct": false,
+      "elapsed_s": 0
+    },
+    {
+      "id": 8,
+      "question": "List all aggressive driving sessions",
+      "expected": "api",
+      "actual": "error",
+      "correct": false,
+      "elapsed_s": 0
+    },
+    {
+      "id": 9,
+      "question": "What car does Driver 3 drive?",
+      "expected": "api",
+      "actual": "error",
+      "correct": false,
+      "elapsed_s": 0
+    },
+    {
+      "id": 10,
+      "question": "Compare average steering angle between drivers",
+      "expected": "api",
+      "actual": "error",
+      "correct": false,
+      "elapsed_s": 0
+    },
+    {
+      "id": 11,
+      "question": "What does the MIL light indicate?",
+      "expected": "rag",
+      "actual": "error",
+      "correct": false,
+      "elapsed_s": 0
+    },
+    {
+      "id": 12,
+      "question": "What is a Diagnostic Trouble Code?",
+      "expected": "rag",
+      "actual": "error",
+      "correct": false,
+      "elapsed_s": 0
+    },
+    {
+      "id": 13,
+      "question": "What does high RPM with aggressive throttle indicate mechanically?",
+      "expected": "rag",
+      "actual": "error",
+      "correct": false,
+      "elapsed_s": 0
+    },
+    {
+      "id": 14,
+      "question": "What is the difference between OBD-II and EOBD?",
+      "expected": "rag",
+      "actual": "error",
+      "correct": false,
+      "elapsed_s": 0
+    },
+    {
+      "id": 15,
+      "question": "What is Freeze Frame data used for?",
+      "expected": "rag",
+      "actual": "error",
+      "correct": false,
+      "elapsed_s": 0
+    },
+    {
+      "id": 16,
+      "question": "What protocols does OBD-II support for vehicle communication?",
+      "expected": "rag",
+      "actual": "error",
+      "correct": false,
+      "elapsed_s": 0
+    },
+    {
+      "id": 17,
+      "question": "What does I/M Readiness mean?",
+      "expected": "rag",
+      "actual": "error",
+      "correct": false,
+      "elapsed_s": 0
+    },
+    {
+      "id": 18,
+      "question": "Explain what causes a flashing MIL light",
+      "expected": "rag",
+      "actual": "error",
+      "correct": false,
+      "elapsed_s": 0
+    },
+    {
+      "id": 19,
+      "question": "Compare Driver 1's RPM behavior with what causes catalytic converter damage",
+      "expected": "both",
+      "actual": "error",
+      "correct": false,
+      "elapsed_s": 0
+    },
+    {
+      "id": 20,
+      "question": "How does Driver 3's aggressive driving relate to engine wear mechanically?",
+      "expected": "both",
+      "actual": "error",
+      "correct": false,
+      "elapsed_s": 0
+    }
+  ]
+}
